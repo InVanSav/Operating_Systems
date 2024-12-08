@@ -1,9 +1,16 @@
 #!/bin/bash
 
-echo "Обновление исходников..."
+echo Обновление исходников...
 git pull origin main || exit 1
 
-echo "Сборка проекта..."
-make || exit 1
+echo Создаем директорию для сборки...
+mkdir build
+cd build
 
-echo "Сборка завершена!"
+echo Конфигурация проекта...
+cmake ..
+
+echo Собираем проект...
+cmake --build .
+
+echo Сборка завершена!
