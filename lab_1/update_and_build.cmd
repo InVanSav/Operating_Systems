@@ -8,7 +8,7 @@ mkdir build
 cd build
 
 echo Конфигурация проекта...
-cmake -G "MinGW Makefiles" ..
+cmake ..
 
 echo Собираем проект...
 cmake --build .
