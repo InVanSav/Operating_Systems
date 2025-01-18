@@ -10,17 +10,24 @@ TemperatureReader::TemperatureReader(const std::string& portName,
       measurementLogger(measurementLog, 86400), // 24 hours
       hourlyLogger(hourlyLog, 720), // 30 days (24 * 30)
       dailyLogger(dailyLog, 365), // 1 year
-      startOfDay(std::chrono::system_clock::now()) {}
+      serialReader(portName) {
 
-void TemperatureReader::processTemperature() {
-    std::ifstream portFile(portName);
-    std::string line;
+    serialReader.setOnDataReceived([this](double temperature) {
+        processTemperature(temperature);
+    });
+}
 
-    while (std::getline(portFile, line)) {
-        double temperature = std::stod(line);
-        measurementLogger.log(Logger::getCurrentTime() + " Temperature: " + std::to_string(temperature));
-        hourlyTemperatures.push_back(temperature);
-    }
+void TemperatureReader::start() {
+    serialReader.start();
+}
+
+void TemperatureReader::stop() {
+    serialReader.stop();
+}
+
+void TemperatureReader::processTemperature(double temperature) {
+    measurementLogger.log(Logger::getCurrentTime() + " Temperature: " + std::to_string(temperature));
+    hourlyTemperatures.push_back(temperature);
 }
 
 void TemperatureReader::calculateHourlyAverage() {

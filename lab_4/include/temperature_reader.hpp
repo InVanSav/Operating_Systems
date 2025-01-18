@@ -2,6 +2,7 @@
 #define TEMPERATURE_READER_HPP
 
 #include "logger.hpp"
+#include "serial_reader.hpp"
 #include <vector>
 #include <string>
 #include <chrono>
@@ -12,7 +13,9 @@ public:
                       const std::string& measurementLog,
                       const std::string& hourlyLog,
                       const std::string& dailyLog);
-    void processTemperature();
+    void start();
+    void stop();
+    void processTemperature(double temperature);
     void calculateHourlyAverage();
     void calculateDailyAverage();
 
@@ -25,6 +28,7 @@ private:
     Logger measurementLogger;
     Logger hourlyLogger;
     Logger dailyLogger;
+    SerialReader serialReader;
 };
 
 #endif // TEMPERATURE_READER_HPP
