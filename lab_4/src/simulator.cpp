@@ -1,27 +1,18 @@
-#include "../include/simulator.hpp"
+#include "simulator.hpp"
 #include <random>
+#include <fstream>
 #include <chrono>
 #include <thread>
 
-Simulator::Simulator() : running(false) {}
+Simulator::Simulator(const std::string& portName) : portName(portName), running(false) {}
 
 Simulator::~Simulator() {
     stop();
 }
 
-void Simulator::start(std::function<void(double)> callback) {
+void Simulator::start() {
     running = true;
-    simulationThread = std::thread([this, callback]() {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dist(-10.0, 35.0);
-
-        while (running) {
-            double simulatedTemp = dist(gen);
-            callback(simulatedTemp);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    });
+    simulationThread = std::thread(&Simulator::run, this);
 }
 
 void Simulator::stop() {
@@ -29,4 +20,21 @@ void Simulator::stop() {
     if (simulationThread.joinable()) {
         simulationThread.join();
     }
+}
+
+void Simulator::run() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(-10.0, 35.0);
+
+    std::ofstream portFile(portName, std::ios::trunc);
+
+    while (running) {
+        double simulatedTemp = dist(gen);
+        portFile << simulatedTemp << std::endl;
+        portFile.flush();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    portFile.close();
 }

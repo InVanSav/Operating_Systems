@@ -1,19 +1,23 @@
 #ifndef TEMPERATURE_READER_HPP
 #define TEMPERATURE_READER_HPP
 
+#include "logger.hpp"
 #include <vector>
 #include <string>
 #include <chrono>
-#include "logger.hpp"
 
 class TemperatureReader {
 public:
-    TemperatureReader(const std::string& measurementLog, const std::string& hourlyLog, const std::string& dailyLog);
-    void processTemperature(double temperature);
+    TemperatureReader(const std::string& portName,
+                      const std::string& measurementLog,
+                      const std::string& hourlyLog,
+                      const std::string& dailyLog);
+    void processTemperature();
     void calculateHourlyAverage();
     void calculateDailyAverage();
 
 private:
+    std::string portName;
     std::vector<double> hourlyTemperatures;
     std::vector<double> dailyTemperatures;
     std::chrono::system_clock::time_point startOfDay;
